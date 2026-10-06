@@ -11,11 +11,67 @@ window.addEventListener("load", () => {
 
     document.body.classList.add("loaded");
 
+    // Heroタイトルを1文字ずつ表示
+    const heroTitle = document.querySelector(".hero-title");
+
+    if (heroTitle) {
+        splitHeroText(heroTitle);
+
+        requestAnimationFrame(() => {
+            heroTitle.classList.add("is-visible");
+        });
+    }
+
 });
 
 
 /* ========================================
-   2. スクロールアニメーション
+   2. Heroタイトルを1文字ずつ分割
+======================================== */
+
+function splitHeroText(element) {
+
+    const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT
+    );
+
+    const textNodes = [];
+    let node;
+
+    while ((node = walker.nextNode())) {
+        textNodes.push(node);
+    }
+
+    let charIndex = 0;
+
+    textNodes.forEach((textNode) => {
+
+        const fragment = document.createDocumentFragment();
+
+        const text = textNode.textContent;
+
+        [...text].forEach((char) => {
+
+            const span = document.createElement("span");
+            span.className = "hero-char";
+            span.textContent = char === " " ? "\u00A0" : char;
+            span.style.transitionDelay = `${charIndex * 0.045}s`;
+
+            fragment.appendChild(span);
+            charIndex++;
+
+        });
+
+        textNode.parentNode.replaceChild(fragment, textNode);
+
+    });
+
+}
+
+
+/* ========================================
+   3. スクロールアニメーション
 ======================================== */
 
 const animationTargets = document.querySelectorAll(
@@ -24,12 +80,16 @@ const animationTargets = document.querySelectorAll(
 
 
 // 初期状態を設定
-animationTargets.forEach((element) => {
+animationTargets.forEach((element, index) => {
 
     element.style.opacity = "0";
-    element.style.transform = "translateY(40px)";
+
+    // 左右から交互に登場
+    const direction = index % 2 === 0 ? -45 : 45;
+    element.style.transform = `translateX(${direction}px) translateY(20px)`;
+
     element.style.transition =
-        "opacity 0.8s ease, transform 0.8s ease";
+        "opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.8,.2,1)";
 
 });
 
@@ -43,7 +103,7 @@ const animationObserver = new IntersectionObserver(
             if (entry.isIntersecting) {
 
                 entry.target.style.opacity = "1";
-                entry.target.style.transform = "translateY(0)";
+                entry.target.style.transform = "translateX(0) translateY(0)";
 
                 observer.unobserve(entry.target);
 
