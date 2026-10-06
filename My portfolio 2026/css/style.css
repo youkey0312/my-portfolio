@@ -213,6 +213,33 @@ ul {
     -webkit-text-stroke: 1px var(--black);
 }
 
+.hero-title .hello-text {
+    color: var(--black);
+    -webkit-text-stroke: 0;
+}
+
+/* 「Hello」の1文字ずつ表示用spanも黒にする */
+.hero-title .hello-text .hero-char {
+    color: var(--black);
+    -webkit-text-stroke: 0;
+}
+
+.hero-char {
+    display: inline-block;
+
+    opacity: 0;
+    transform: translateY(35px) rotate(5deg);
+
+    transition:
+        opacity 0.65s ease,
+        transform 0.65s cubic-bezier(.2,.8,.2,1);
+}
+
+.hero-title.is-visible .hero-char {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+}
+
 .hero-text {
     margin-top: 55px;
 
@@ -267,6 +294,13 @@ ul {
     font-size: 10px;
 
     letter-spacing: 0.2em;
+
+    animation: scrollIndicator 2s ease-in-out infinite;
+}
+
+.scroll-indicator span:last-child {
+    display: inline-block;
+    animation: scrollArrow 1.4s ease-in-out infinite;
 }
 
 
@@ -653,6 +687,45 @@ ul {
 
     100% {
         transform: translateY(0);
+    }
+
+}
+
+@keyframes scrollIndicator {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(8px);
+    }
+
+}
+
+@keyframes scrollArrow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(7px);
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 
 }
